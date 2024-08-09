@@ -578,8 +578,8 @@ bool sync_packages(LidarMeasureGroup &meas)
         return true;
     }
     struct MeasureGroup m;
-    cout<<"lidar_buffer.size(): "<<lidar_buffer.size()<<" img_buffer.size(): "<<img_buffer.size()<<endl;
-    cout<<"time_buffer.size(): "<<time_buffer.size()<<" img_time_buffer.size(): "<<img_time_buffer.size()<<endl;
+    // cout<<"lidar_buffer.size(): "<<lidar_buffer.size()<<" img_buffer.size(): "<<img_buffer.size()<<endl;
+    // cout<<"time_buffer.size(): "<<time_buffer.size()<<" img_time_buffer.size(): "<<img_time_buffer.size()<<endl;
     // cout<<"img_time_buffer.front(): "<<img_time_buffer.front()<<endl;
     // cout<<"lidar_end_time: "<<lidar_end_time<<endl;
     ROS_INFO("img_time: %.4f, lidar_time: %.4f", img_time_buffer.front(), lidar_end_time);
