@@ -84,7 +84,7 @@ public:
 
   /// Was this frame selected as keyframe?
   inline bool isKeyframe() const { return is_keyframe_; }
-
+  inline const SE3& T_f_w() const { return T_f_w_; }
   /// Transforms point coordinates in world-frame (w) to camera pixel coordinates (c).
   inline Vector2d w2c(const Vector3d& xyz_w) const { return cam_->world2cam( T_f_w_ * xyz_w ); }
 

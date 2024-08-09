@@ -43,6 +43,7 @@ void Preprocess::process(const livox_ros_driver::CustomMsg::ConstPtr &msg, Point
 {  
   avia_handler(msg);
   *pcl_out = pl_surf;
+  // cout<< "pl_surf.size(): " << pl_surf.size() << endl;
 }
 
 void Preprocess::process(const sensor_msgs::PointCloud2::ConstPtr &msg, PointCloudXYZI::Ptr &pcl_out)
