@@ -83,6 +83,7 @@ add_message_files(
   FILES
   Pose6D.msg
   States.msg
+  pcl_uv.msg
 )
 
 generate_messages(
