@@ -663,6 +663,7 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
     uint size = pcl_wait_pub->points.size();
     //print size
     // std::cout << "rgb_size: " << size << std::endl;
+    // 123
     SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
     // cout << "T_c_w: " << T_c_w << endl;
     camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
