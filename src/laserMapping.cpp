@@ -683,9 +683,10 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
 
     se3_pub.publish(camtf);
     PointCloudXYZRGB::Ptr laserCloudWorldRGB(new PointCloudXYZRGB(size, 1));
-    std::vector<double> u;
-    std::vector<double> v;
-    
+    std::vector<float> u;
+    std::vector<float> v;
+    u.clear();
+    v.clear();
     if(img_en)
     {
         laserCloudWorldRGB->clear();
@@ -700,9 +701,17 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
             if (lidar_selector->new_frame_->cam_->isInFrame(pc.cast<int>(),0))
             {
                 // cv::Mat img_cur = lidar_selector->new_frame_->img();
+                // cout << "uv: " << pc[0] << ", " << pc[1]<< endl;
+                img_rgb = lidar_selector->img_rgb;
+                
+                // if (pc[0]<0 || pc[0]>img_rgb.cols || pc[1]<0 || pc[1]>img_rgb.rows)
+                // {
+                //     cout << "uv:" << pc[0] << ", " << pc[1] << endl;
+                // }
+                
                 u.push_back(pc[0]);
                 v.push_back(pc[1]);
-                img_rgb = lidar_selector->img_rgb;
+                
                 V3F pixel = lidar_selector->getpixel(img_rgb, pc);
                 pointRGB.r = pixel[2];
                 pointRGB.g = pixel[1];
@@ -949,7 +958,7 @@ int main(int argc, char** argv)
     ros::Subscriber sub_img = nh.subscribe(img_topic, 200000, img_cbk);
     img_pub = it.advertise("/rgb_img", 100);
     se3_pub = nh.advertise<nav_msgs::Odometry>("/transformation_world_cam", 100);
-    pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("pcl_uv", 100);
+    pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("/pcl_uv", 100);
     ros::Publisher pubLaserCloudFullRes = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_registered", 100);
     ros::Publisher pubLaserCloudFullResRgb = nh.advertise<sensor_msgs::PointCloud2>
