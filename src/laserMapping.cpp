@@ -65,7 +65,7 @@
 #include <opencv2/opencv.hpp>
 #include <vikit/camera_loader.h>
 #include"lidar_selection.h"
-
+#include "fast_livo/pcl_uv.h"
 #ifdef USE_ikdtree
     #ifdef USE_ikdforest
     #include <ikd-Forest/ikd_Forest.h>
@@ -188,7 +188,7 @@ V3D position_last(Zero3d);
 Eigen::Matrix3d Rcl;
 Eigen::Vector3d Pcl;
 image_transport::Publisher img_pub;
-ros::Publisher pubOdomAftMapped, se3_pub;
+ros::Publisher pubOdomAftMapped, se3_pub, pcl_uv_pub;
 //estimator inputs and output;
 LidarMeasureGroup LidarMeasures;
 // SparseMap sparse_map;
@@ -548,7 +548,7 @@ bool sync_packages(LidarMeasureGroup &meas)
         sort(meas.lidar->points.begin(), meas.lidar->points.end(), time_list); // sort by sample timestamp
         meas.lidar_beg_time = time_buffer.front(); // generate lidar_beg_time
         lidar_end_time = meas.lidar_beg_time + meas.lidar->points.back().curvature / double(1000); // calc lidar scan end time
-        ROS_INFO("lidar_end_time: %.4f, lidar_beg_time: %.4f", lidar_end_time, meas.lidar_beg_time);
+        // ROS_INFO("lidar_end_time: %.4f, lidar_beg_time: %.4f", lidar_end_time, meas.lidar_beg_time);
         lidar_pushed = true; // flag
     }
 
@@ -582,7 +582,7 @@ bool sync_packages(LidarMeasureGroup &meas)
     // cout<<"time_buffer.size(): "<<time_buffer.size()<<" img_time_buffer.size(): "<<img_time_buffer.size()<<endl;
     // cout<<"img_time_buffer.front(): "<<img_time_buffer.front()<<endl;
     // cout<<"lidar_end_time: "<<lidar_end_time<<endl;
-    ROS_INFO("img_time: %.4f, lidar_time: %.4f", img_time_buffer.front(), lidar_end_time);
+    // ROS_INFO("img_time: %.4f, lidar_time: %.4f", img_time_buffer.front(), lidar_end_time);
     if ((img_time_buffer.front()>lidar_end_time) )
     { // has img topic, but img topic timestamp larger than lidar end time, process lidar topic.
         if (last_timestamp_imu < lidar_end_time+0.02) 
@@ -663,8 +663,9 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
     uint size = pcl_wait_pub->points.size();
     //print size
     // std::cout << "rgb_size: " << size << std::endl;
+    // 123
     SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
-    cout << "T_c_w: " << T_c_w << endl;
+    // cout << "T_c_w: " << T_c_w << endl;
     camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
     camtf.header.frame_id = "camera_init";
     camtf.child_frame_id = "aft_mapped";
@@ -682,6 +683,10 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
 
     se3_pub.publish(camtf);
     PointCloudXYZRGB::Ptr laserCloudWorldRGB(new PointCloudXYZRGB(size, 1));
+    std::vector<double> u;
+    std::vector<double> v;
+    u.clear();
+    v.clear();
     if(img_en)
     {
         laserCloudWorldRGB->clear();
@@ -693,10 +698,13 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
             pointRGB.z =  pcl_wait_pub->points[i].z;
             V3D p_w(pcl_wait_pub->points[i].x, pcl_wait_pub->points[i].y, pcl_wait_pub->points[i].z);
             V2D pc(lidar_selector->new_frame_->w2c(p_w));
+            u.push_back(pc[0]);
+            v.push_back(pc[1]);
             if (lidar_selector->new_frame_->cam_->isInFrame(pc.cast<int>(),0))
             {
-                // cv::Mat img_cur = lidar_selector->new_frame_->img();
+
                 img_rgb = lidar_selector->img_rgb;
+
                 V3F pixel = lidar_selector->getpixel(img_rgb, pc);
                 pointRGB.r = pixel[2];
                 pointRGB.g = pixel[1];
@@ -730,6 +738,12 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
         laserCloudmsg.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
         laserCloudmsg.header.frame_id = "camera_init";
         pubLaserCloudFullRes.publish(laserCloudmsg);
+        fast_livo::pcl_uv uv_msg;
+        uv_msg.u = u;
+        uv_msg.v = v;
+        uv_msg.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
+        uv_msg.header.frame_id = "camera_init";
+        pcl_uv_pub.publish(uv_msg);
         publish_count -= PUBFRAME_PERIOD;
 
     }
@@ -937,6 +951,7 @@ int main(int argc, char** argv)
     ros::Subscriber sub_img = nh.subscribe(img_topic, 200000, img_cbk);
     img_pub = it.advertise("/rgb_img", 100);
     se3_pub = nh.advertise<nav_msgs::Odometry>("/transformation_world_cam", 100);
+    pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("/pcl_uv", 100);
     ros::Publisher pubLaserCloudFullRes = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_registered", 100);
     ros::Publisher pubLaserCloudFullResRgb = nh.advertise<sensor_msgs::PointCloud2>
