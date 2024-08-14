@@ -661,27 +661,25 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
 {
     cv::Mat img_rgb;
     uint size = pcl_wait_pub->points.size();
-    //print size
-    // std::cout << "rgb_size: " << size << std::endl;
-    // 123
-    SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
-    // cout << "T_c_w: " << T_c_w << endl;
-    camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
-    camtf.header.frame_id = "camera_init";
-    camtf.child_frame_id = "aft_mapped";
-    // Set position
-    camtf.pose.pose.position.x = T_c_w.translation().x();
-    camtf.pose.pose.position.y = T_c_w.translation().y();
-    camtf.pose.pose.position.z = T_c_w.translation().z();
+    // transformation matrix from world to camera
+    // SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
+    // // cout << "T_c_w: " << T_c_w << endl;
+    // camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
+    // camtf.header.frame_id = "camera_init";
+    // camtf.child_frame_id = "aft_mapped";
+    // // Set position
+    // camtf.pose.pose.position.x = T_c_w.translation().x();
+    // camtf.pose.pose.position.y = T_c_w.translation().y();
+    // camtf.pose.pose.position.z = T_c_w.translation().z();
 
-    // Set orientation using unit_quaternion
-    Eigen::Quaterniond q_eigen = T_c_w.unit_quaternion();
-    camtf.pose.pose.orientation.x = q_eigen.x();
-    camtf.pose.pose.orientation.y = q_eigen.y();
-    camtf.pose.pose.orientation.z = q_eigen.z();
-    camtf.pose.pose.orientation.w = q_eigen.w();
+    // // Set orientation using unit_quaternion
+    // Eigen::Quaterniond q_eigen = T_c_w.unit_quaternion();
+    // camtf.pose.pose.orientation.x = q_eigen.x();
+    // camtf.pose.pose.orientation.y = q_eigen.y();
+    // camtf.pose.pose.orientation.z = q_eigen.z();
+    // camtf.pose.pose.orientation.w = q_eigen.w();
 
-    se3_pub.publish(camtf);
+    // se3_pub.publish(camtf);
     PointCloudXYZRGB::Ptr laserCloudWorldRGB(new PointCloudXYZRGB(size, 1));
     std::vector<double> u;
     std::vector<double> v;
@@ -950,14 +948,14 @@ int main(int argc, char** argv)
     ros::Subscriber sub_imu = nh.subscribe(imu_topic, 200000, imu_cbk);
     ros::Subscriber sub_img = nh.subscribe(img_topic, 200000, img_cbk);
     img_pub = it.advertise("/rgb_img", 100);
-    se3_pub = nh.advertise<nav_msgs::Odometry>("/transformation_world_cam", 100);
+    // se3_pub = nh.advertise<nav_msgs::Odometry>("/transformation_world_cam", 100);
     pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("/pcl_uv", 100);
     ros::Publisher pubLaserCloudFullRes = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_registered", 100);
     ros::Publisher pubLaserCloudFullResRgb = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_registered_rgb", 100);
     ros::Publisher pubLaserCloud = nh.advertise<sensor_msgs::PointCloud2>
-            ("/lidar_cloud", 100);
+            ("/lidar_cloud_undistorded", 100);
     ros::Publisher pubVisualCloud = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_visual_map", 100);
     ros::Publisher pubSubVisualCloud = nh.advertise<sensor_msgs::PointCloud2>
