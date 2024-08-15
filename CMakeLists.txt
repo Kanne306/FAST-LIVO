@@ -65,6 +65,7 @@ find_package(Eigen3 REQUIRED)
 find_package(PCL REQUIRED)
 FIND_PACKAGE(OpenCV REQUIRED)
 FIND_PACKAGE(Sophus REQUIRED)
+message(STATUS "Sophus version: ${Sophus_VERSION}")
 FIND_PACKAGE(Boost REQUIRED COMPONENTS thread)
 set(Sophus_LIBRARIES libSophus.so)
 
@@ -83,7 +84,6 @@ add_message_files(
   FILES
   Pose6D.msg
   States.msg
-  pcl_uv.msg
 )
 
 generate_messages(

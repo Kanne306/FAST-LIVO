@@ -45,6 +45,8 @@ void LidarSelector::init()
     sub_sparse_map = new SubSparseMap;
     Rci = sparse_map->Rcl * Rli;
     Pci= sparse_map->Rcl*Pli + sparse_map->Pcl;
+    cout << "Rci: " << Rci << endl;
+    cout << "Pci: " << Pci << endl;
     M3D Ric;
     V3D Pic;
     Jdphi_dR = Rci;

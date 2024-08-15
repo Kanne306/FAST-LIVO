@@ -65,7 +65,6 @@
 #include <opencv2/opencv.hpp>
 #include <vikit/camera_loader.h>
 #include"lidar_selection.h"
-#include "fast_livo/pcl_uv.h"
 #ifdef USE_ikdtree
     #ifdef USE_ikdforest
     #include <ikd-Forest/ikd_Forest.h>
@@ -188,7 +187,7 @@ V3D position_last(Zero3d);
 Eigen::Matrix3d Rcl;
 Eigen::Vector3d Pcl;
 image_transport::Publisher img_pub;
-ros::Publisher pubOdomAftMapped, se3_pub, pcl_uv_pub;
+ros::Publisher pubOdomAftMapped, odom_cam_pub;
 //estimator inputs and output;
 LidarMeasureGroup LidarMeasures;
 // SparseMap sparse_map;
@@ -662,29 +661,29 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
     cv::Mat img_rgb;
     uint size = pcl_wait_pub->points.size();
     // transformation matrix from world to camera
-    // SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
-    // // cout << "T_c_w: " << T_c_w << endl;
-    // camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
-    // camtf.header.frame_id = "camera_init";
-    // camtf.child_frame_id = "aft_mapped";
-    // // Set position
-    // camtf.pose.pose.position.x = T_c_w.translation().x();
-    // camtf.pose.pose.position.y = T_c_w.translation().y();
-    // camtf.pose.pose.position.z = T_c_w.translation().z();
+    SE3 T_c_w = lidar_selector->new_frame_->T_f_w();
+    // cout << "T_c_w: " << T_c_w.matrix() << endl;
+    camtf.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
+    camtf.header.frame_id = "camera_init";
+    camtf.child_frame_id = "aft_mapped";
+    // Set position
+    camtf.pose.pose.position.x = T_c_w.translation().x();
+    camtf.pose.pose.position.y = T_c_w.translation().y();
+    camtf.pose.pose.position.z = T_c_w.translation().z();
 
-    // // Set orientation using unit_quaternion
-    // Eigen::Quaterniond q_eigen = T_c_w.unit_quaternion();
-    // camtf.pose.pose.orientation.x = q_eigen.x();
-    // camtf.pose.pose.orientation.y = q_eigen.y();
-    // camtf.pose.pose.orientation.z = q_eigen.z();
-    // camtf.pose.pose.orientation.w = q_eigen.w();
+    // Set orientation using unit_quaternion
+    Eigen::Quaterniond q_eigen = T_c_w.unit_quaternion();
+    camtf.pose.pose.orientation.x = q_eigen.x();
+    camtf.pose.pose.orientation.y = q_eigen.y();
+    camtf.pose.pose.orientation.z = q_eigen.z();
+    camtf.pose.pose.orientation.w = q_eigen.w();
 
-    // se3_pub.publish(camtf);
+    odom_cam_pub.publish(camtf);
     PointCloudXYZRGB::Ptr laserCloudWorldRGB(new PointCloudXYZRGB(size, 1));
-    std::vector<double> u;
-    std::vector<double> v;
-    u.clear();
-    v.clear();
+    // std::vector<double> u;
+    // std::vector<double> v;
+    // u.clear();
+    // v.clear();
     if(img_en)
     {
         laserCloudWorldRGB->clear();
@@ -696,8 +695,8 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
             pointRGB.z =  pcl_wait_pub->points[i].z;
             V3D p_w(pcl_wait_pub->points[i].x, pcl_wait_pub->points[i].y, pcl_wait_pub->points[i].z);
             V2D pc(lidar_selector->new_frame_->w2c(p_w));
-            u.push_back(pc[0]);
-            v.push_back(pc[1]);
+            // u.push_back(pc[0]);
+            // v.push_back(pc[1]);
             if (lidar_selector->new_frame_->cam_->isInFrame(pc.cast<int>(),0))
             {
 
@@ -736,12 +735,12 @@ void publish_frame_world_rgb(const ros::Publisher & pubLaserCloudFullRes, lidar_
         laserCloudmsg.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
         laserCloudmsg.header.frame_id = "camera_init";
         pubLaserCloudFullRes.publish(laserCloudmsg);
-        fast_livo::pcl_uv uv_msg;
-        uv_msg.u = u;
-        uv_msg.v = v;
-        uv_msg.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
-        uv_msg.header.frame_id = "camera_init";
-        pcl_uv_pub.publish(uv_msg);
+        // fast_livo::pcl_uv uv_msg;
+        // uv_msg.u = u;
+        // uv_msg.v = v;
+        // uv_msg.header.stamp = ros::Time().fromSec(last_timestamp_lidar);
+        // uv_msg.header.frame_id = "camera_init";
+        // pcl_uv_pub.publish(uv_msg);
         publish_count -= PUBFRAME_PERIOD;
 
     }
@@ -948,8 +947,8 @@ int main(int argc, char** argv)
     ros::Subscriber sub_imu = nh.subscribe(imu_topic, 200000, imu_cbk);
     ros::Subscriber sub_img = nh.subscribe(img_topic, 200000, img_cbk);
     img_pub = it.advertise("/rgb_img", 100);
-    // se3_pub = nh.advertise<nav_msgs::Odometry>("/transformation_world_cam", 100);
-    pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("/pcl_uv", 100);
+    odom_cam_pub = nh.advertise<nav_msgs::Odometry>("/cam_odom", 100);
+    // pcl_uv_pub = nh.advertise<fast_livo::pcl_uv>("/pcl_uv", 100);
     ros::Publisher pubLaserCloudFullRes = nh.advertise<sensor_msgs::PointCloud2>
             ("/cloud_registered", 100);
     ros::Publisher pubLaserCloudFullResRgb = nh.advertise<sensor_msgs::PointCloud2>
