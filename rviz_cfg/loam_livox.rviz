@@ -5,12 +5,10 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /mapping1
-        - /mapping1/currPoints1/Autocompute Value Bounds1
         - /Odometry1/Odometry1/Shape1
-        - /Odometry1/Odometry2
         - /Odometry1/Odometry2/Shape1
       Splitter Ratio: 0.520588219165802
-    Tree Height: 552
+    Tree Height: 379
   - Class: rviz/Selection
     Name: Selection
   - Class: rviz/Tool Properties
@@ -28,7 +26,7 @@ Panels:
   - Class: rviz/Time
     Name: Time
     SyncMode: 0
-    SyncSource: currPoints
+    SyncSource: Image
 Preferences:
   PromptSaveOnExit: true
 Toolbars:
@@ -66,6 +64,36 @@ Visualization Manager:
     - Class: rviz/Group
       Displays:
         - Alpha: 1
+          Autocompute Intensity Bounds: false
+          Autocompute Value Bounds:
+            Max Value: 20
+            Min Value: -3
+            Value: false
+          Axis: Z
+          Channel Name: intensity
+          Class: rviz/PointCloud2
+          Color: 255; 255; 255
+          Color Transformer: FlatColor
+          Decay Time: 0
+          Enabled: false
+          Invert Rainbow: true
+          Max Color: 255; 255; 255
+          Max Intensity: 150
+          Min Color: 0; 0; 0
+          Min Intensity: 0
+          Name: currPoints_livo
+          Position Transformer: XYZ
+          Queue Size: 0
+          Selectable: true
+          Size (Pixels): 2
+          Size (m): 0.05000000074505806
+          Style: Spheres
+          Topic: /cloud_registered_rgb
+          Unreliable: false
+          Use Fixed Frame: true
+          Use rainbow: true
+          Value: false
+        - Alpha: 1
           Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
             Max Value: 10
@@ -81,7 +109,7 @@ Visualization Manager:
           Invert Rainbow: false
           Max Color: 255; 255; 255
           Min Color: 0; 0; 0
-          Name: surround
+          Name: rgb_cloud_livo
           Position Transformer: XYZ
           Queue Size: 1
           Selectable: false
@@ -94,11 +122,11 @@ Visualization Manager:
           Use rainbow: true
           Value: false
         - Alpha: 1
-          Autocompute Intensity Bounds: false
+          Autocompute Intensity Bounds: true
           Autocompute Value Bounds:
-            Max Value: 20
-            Min Value: -3
-            Value: false
+            Max Value: 10
+            Min Value: -10
+            Value: true
           Axis: Z
           Channel Name: intensity
           Class: rviz/PointCloud2
@@ -106,19 +134,17 @@ Visualization Manager:
           Color Transformer: FlatColor
           Decay Time: 0
           Enabled: true
-          Invert Rainbow: true
+          Invert Rainbow: false
           Max Color: 255; 255; 255
-          Max Intensity: 150
           Min Color: 0; 0; 0
-          Min Intensity: 0
-          Name: currPoints
+          Name: currPoints_trpmap
           Position Transformer: XYZ
-          Queue Size: 0
+          Queue Size: 10
           Selectable: true
-          Size (Pixels): 2
-          Size (m): 0.009999999776482582
-          Style: Points
-          Topic: /cloud_registered_rgb
+          Size (Pixels): 3
+          Size (m): 0.05000000074505806
+          Style: Spheres
+          Topic: /rgb_point_cloud
           Unreliable: false
           Use Fixed Frame: true
           Use rainbow: true
@@ -141,7 +167,7 @@ Visualization Manager:
           Max Intensity: 153
           Min Color: 0; 0; 0
           Min Intensity: 0
-          Name: rgb_cloud
+          Name: rgb_cloud_trpmap
           Position Transformer: XYZ
           Queue Size: 10
           Selectable: true
@@ -287,7 +313,19 @@ Visualization Manager:
       Max Value: 1
       Median window: 5
       Min Value: 0
-      Name: Image
+      Name: RGB Image
+      Normalize Range: true
+      Queue Size: 2
+      Transport Hint: raw
+      Unreliable: false
+      Value: true
+    - Class: rviz/Image
+      Enabled: true
+      Image Topic: /TR_mask
+      Max Value: 1
+      Median window: 5
+      Min Value: 0
+      Name: TR Mask
       Normalize Range: true
       Queue Size: 2
       Transport Hint: raw
@@ -300,18 +338,6 @@ Visualization Manager:
       Namespaces:
         {}
       Queue Size: 100
-      Value: true
-    - Class: rviz/Image
-      Enabled: true
-      Image Topic: /TR_mask
-      Max Value: 1
-      Median window: 5
-      Min Value: 0
-      Name: Image
-      Normalize Range: true
-      Queue Size: 2
-      Transport Hint: raw
-      Unreliable: false
       Value: true
   Enabled: true
   Global Options:
@@ -341,7 +367,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 23.818668365478516
+      Distance: 7.697159767150879
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -349,28 +375,30 @@ Visualization Manager:
         Value: false
       Field of View: 0.7853981852531433
       Focal Point:
-        X: -0.8009364008903503
-        Y: 0.786454439163208
-        Z: 2.0006444454193115
+        X: 8.06202220916748
+        Y: -4.481794357299805
+        Z: -2.079888105392456
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.1647971272468567
+      Pitch: 0.7897965312004089
       Target Frame: <Fixed Frame>
-      Yaw: 2.6817219257354736
+      Yaw: 1.0617237091064453
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1376
+  Height: 1016
   Hide Left Dock: false
   Hide Right Dock: true
-  Image:
+  QMainWindow State: 000000ff00000000fd0000000400000000000001ac0000039efc0200000014fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d000001b8000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000001200520047004200200049006d00610067006501000001fb000000f00000001600fffffffb0000000e005400520020004d00610073006b01000002f1000000ea0000001600fffffffb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000c00430061006d00650072006101000002d50000010f0000000000000000fb0000000c00430061006d0065007200610100000310000000d40000000000000000fb0000000c00430061006d0065007200610000000319000000cb0000000000000000fb0000000a0049006d0061006700650100000319000000cb0000000000000000fb0000000a0049006d006100670065010000023c0000019f0000000000000000fb0000000a0049006d00610067006501000002cb000001100000000000000000fb0000000e005400520020004d00610073006b0000000311000000ca00000000000000000000000100000152000003a7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003a7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f00000052fc0100000002fb0000000800540069006d0065020000001e000002580000041a000001e0fb0000000800540069006d00650100000000000004500000000000000000000005860000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  RGB Image:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000001ac00000506fc0200000013fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003d00000265000000c900fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb0000000a0049006d00610067006501000002a80000014f0000001600fffffffb0000000a0049006d00610067006501000003fd000001460000001600fffffffb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000a0049006d00610067006501000002c5000000c70000000000000000fb0000000c00430061006d00650072006101000002d50000010f0000000000000000fb0000000c00430061006d0065007200610100000310000000d40000000000000000fb0000000c00430061006d0065007200610000000319000000cb0000000000000000fb0000000a0049006d0061006700650100000319000000cb0000000000000000fb0000000a0049006d006100670065010000023c0000019f0000000000000000fb0000000a0049006d00610067006501000002cb0000011000000000000000000000000100000152000003a7fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003d000003a7000000a400fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073f00000052fc0100000002fb0000000800540069006d0065020000001e000002580000041a000001e0fb0000000800540069006d00650100000000000004500000000000000000000008060000050600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
+    collapsed: false
+  TR Mask:
     collapsed: false
   Time:
     collapsed: false
@@ -378,6 +406,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 2488
-  X: 1992
+  Width: 1848
+  X: 1152
   Y: 27
